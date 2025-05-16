@@ -1,21 +1,28 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.13-slim
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the requirements.txt file to the container
+# Install system dependencies (for rembg and image processing)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements file
 COPY requirements.txt .
 
-# Install the required packages
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the current directory contents into the container at /app
+# Copy application code
 COPY . .
 
-# Expose the port that the Flask app runs on
+# Expose Flask app port
 EXPOSE 5100
 
-# Command to run the Flask application using gunicorn for production
+# Use gunicorn to run Flask app for production
 CMD ["gunicorn", "--bind", "0.0.0.0:5100", "app:app", "--workers=4"]
-
