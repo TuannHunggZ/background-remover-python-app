@@ -23,7 +23,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-App sẽ chạy tại: [http://localhost:5100](http://localhost:5100)
+App will run at: [http://localhost:5100](http://localhost:5100)
 
 ---
 
