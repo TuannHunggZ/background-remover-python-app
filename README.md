@@ -7,25 +7,17 @@ A simple Flask web application that removes image backgrounds.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/remove-background.git
+git clone https://github.com/xNhatMinh/remove-background.git
 cd remove-background
 ```
 
-### 2. Create a virtual environment (optional but recommended)
-
-```bash
-python -m venv venv
-source venv/bin/activate       # On Linux/Mac
-venv\Scripts\activate          # On Windows
-```
-
-### 3. Install dependencies
+### 2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the app
+### 3. Run the app
 
 ```bash
 python app.py
@@ -40,13 +32,13 @@ App sẽ chạy tại: [http://localhost:5100](http://localhost:5100)
 ### 1. Build Docker image
 
 ```bash
-docker build -t remove-background-app .
+docker build -t background-remover-python-app .
 ```
 
 ### 2. Run Docker container
 
 ```bash
-docker run -p 5100:5100 remove-background-app
+docker run -p 5100:5100 background-remover-python-app
 ```
 
 App sẽ chạy tại: [http://localhost:5100](http://localhost:5100)
