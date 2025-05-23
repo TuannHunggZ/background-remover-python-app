@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Change Background{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Change Background</h2>
+                <p class="text-center text-muted mb-4">Select a background to apply to your image</p>
+                
+                <!-- Background Selection -->
+                <div class="mb-4">
+                    <form method="POST" action="{{ url_for('main.apply_background') }}">
+                        <input type="hidden" name="filename" value="{{ filename }}">
+                        
+                        {% if backgrounds %}
+                        <div class="row g-3">
+                            {% for bg_url in backgrounds %}
+                            <div class="col-md-4 col-sm-6">
+                                <div class="background-option">
+                                    <label class="d-block cursor-pointer">
+                                        <img src="{{ bg_url }}" alt="Background" class="img-fluid">
+                                        <div class="p-2 text-center">
+                                            <input type="radio" name="background_url" value="{{ bg_url }}" class="form-check-input me-2" required>
+                                            <span>Background {{ loop.index }}</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" id="apply-btn" class="btn btn-primary px-5" disabled>
+                                <i class="fas fa-magic me-2"></i>Apply Background
+                            </button>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>No backgrounds available. Please upload one below.
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+                
+                <!-- Upload New Background -->
+                <div class="card bg-light">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3">Upload New Background</h4>
+                        <form method="POST" action="{{ url_for('main.upload_background') }}" enctype="multipart/form-data" class="row g-3 align-items-center">
+                            <input type="hidden" name="filename" value="{{ filename }}">
+                            
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="file" name="background_file" class="form-control" accept="image/*" id="bg-file-input" required>
+                                    <label class="input-group-text" for="bg-file-input">
+                                        <i class="fas fa-image"></i>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <button class="btn btn-primary w-100" type="submit">
+                                    <i class="fas fa-upload me-2"></i>Upload
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('main.upload_file') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle background selection with visual feedback
+        const backgroundOptions = document.querySelectorAll('.background-option');
+        const applyBtn = document.getElementById('apply-btn');
+        
+        backgroundOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Clear previous selections
+                backgroundOptions.forEach(bg => bg.classList.remove('selected'));
+                
+                // Select this option
+                this.classList.add('selected');
+                const radioInput = this.querySelector('input[type="radio"]');
+                radioInput.checked = true;
+                
+                // Enable apply button
+                applyBtn.disabled = false;
+            });
+        });
+    });
+</script>
+{% endblock %}

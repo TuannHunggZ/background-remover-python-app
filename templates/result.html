@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Processed Image{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-5">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-check-circle me-2 result-check-icon"></i>Image Processed
+                </h1>
+                
+                <div class="text-center">
+                    <img src="{{ img_url }}" alt="Processed Image" class="result-img mb-4 result-image">
+                </div>
+                
+                <!-- Image URL
+                <div class="p-3 rounded mb-4" style="background-color: var(--dark-accent); border: 1px solid #333;">
+                    <div class="d-flex align-items-center">
+                        <div class="input-group">
+                            <input type="text" class="form-control result-url-input" value="{{ img_url }}" id="image-url" readonly>
+                            <button class="btn btn-outline-secondary copy-link-btn result-copy-btn" type="button" onclick="copyToClipboard('{{ img_url }}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-muted small mt-2 mb-0">
+                        <i class="fas fa-info-circle me-1 result-info-icon"></i> This URL will be available for sharing
+                    </p>
+                </div> -->
+                
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
+                    <a href="{{ url_for('main.download_file', filename=filename) }}" class="btn btn-primary result-download-btn">
+                        <i class="fas fa-download me-2"></i>Download Image
+                    </a>
+                    <a href="{{ url_for('main.change_background', filename=filename) }}" class="btn btn-outline-primary result-change-bg-btn">
+                        <i class="fas fa-image me-2"></i>Change Background
+                    </a>
+                    <a href="{{ url_for('main.upload_file') }}" class="btn btn-outline-secondary result-process-another-btn">
+                        <i class="fas fa-redo me-2"></i>Process Another Image
+                    </a>
+                </div>
+                
+                {% if not logged_in %}
+                <div class="alert text-center mt-4 result-usage-alert">
+                    <i class="fas fa-info-circle me-2"></i>You have used <strong>{{ session['upload_count'] }} of 3</strong> free uploads
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body p-4 text-center">
+                <h4 class="result-share-title">Share Your Result</h4>
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <a href="javascript:void(0)" onclick="shareOnSocial('twitter')" class="btn btn-outline-info result-twitter-btn">
+                        <i class="fab fa-twitter me-2"></i>Twitter
+                    </a>
+                    <a href="javascript:void(0)" onclick="shareOnSocial('facebook')" class="btn btn-outline-primary result-facebook-btn">
+                        <i class="fab fa-facebook me-2"></i>Facebook
+                    </a>
+                    <a href="javascript:void(0)" onclick="shareOnSocial('pinterest')" class="btn btn-outline-danger result-pinterest-btn">
+                        <i class="fab fa-pinterest me-2"></i>Pinterest
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add glow effect on hover for buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 0 15px rgba(3, 233, 244, 0.5)';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.boxShadow = this.classList.contains('btn-primary') ? 
+                    '0 4px 15px rgba(0, 180, 216, 0.3)' : 'none';
+            });
+        });
+    });
+    
+    function shareOnSocial(platform) {
+        const url = document.getElementById('image-url').value;
+        const text = 'Check out this image I processed with ImageTool!';
+        
+        let shareUrl = '';
+        
+        switch(platform) {
+            case 'twitter':
+                shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                break;
+            case 'facebook':
+                shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                break;
+            case 'pinterest':
+                shareUrl = `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(url)}&media=${encodeURIComponent(url)}&description=${encodeURIComponent(text)}`;
+                break;
+            default:
+                return;
+        }
+        
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+</script>
+{% endblock %}
