@@ -496,7 +496,7 @@ Open a web browser and navigate to Grafana using your server's IP address. The d
 
 # AWS EKS
 
-**Step 01: Create EKS Cluster using eksctl**
+## Step 01: Create EKS Cluster using eksctl
 
 ```bash
 eksctl create cluster --name=vthdemo --region=ap-southeast-1 --zones=ap-southeast-1a,ap-southeast-1b --without-nodegroup
