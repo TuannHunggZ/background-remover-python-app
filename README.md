@@ -493,3 +493,70 @@ sudo systemctl status grafana-server
 Open a web browser and navigate to Grafana using your server's IP address. The default port for Grafana is 3000. For example:
 
 `http://<your-server-ip>:3000`
+
+# AWS EKS
+
+**Step 01: Create EKS Cluster using eksctl**
+
+```bash
+eksctl create cluster --name=vthdemo --region=ap-southeast-1 --zones=ap-southeast-1a,ap-southeast-1b --without-nodegroup
+```
+
+## Step 02: Create & Associate IAM OIDC Provider for our EKS Cluster
+* To enable and use AWS IAM roles for Kubernetes service accounts on our EKS cluster, we must create & associate OIDC identity provider.
+* To do so using eksctl we can use the below command.
+
+```bash
+# Replace with region & cluster name
+eksctl utils associate-iam-oidc-provider --region ap-southeast-1 --cluster vthdemo --approve
+```
+
+## Step 03: Create Node Group with additional Add-Ons in Public Subnets
+These add-ons will create the respective IAM policies for us automatically within our Node Group role.
+
+```bash
+# Create Public Node Group   
+eksctl create nodegroup --cluster=vthdemo --region=ap-southeast-1 --name=vthdemo-ng-public1 --node-type=t2.medium --nodes=2 --nodes-min=2 --nodes-max=4 --node-volume-size=20 --ssh-access --ssh-public-key=bgra --managed --asg-access --external-dns-access --full-ecr-access --appmesh-access --alb-ingress-access
+```
+
+# Monitor Kubernetes with Prometheus
+
+Prometheus is a powerful monitoring and alerting toolkit, and you'll use it to monitor your Kubernetes cluster. Additionally, you'll install the node exporter using Helm to collect metrics from your cluster nodes.
+
+## Install Node Exporter using Helm
+
+To begin monitoring your Kubernetes cluster, you'll install the Prometheus Node Exporter. This component allows you to collect system-level metrics from your cluster nodes. Here are the steps to install the Node Exporter using Helm:
+
+1. Add the Prometheus Community Helm repository:
+
+    ```bash
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    ```
+
+2. Create a Kubernetes namespace for the Node Exporter:
+
+    ```bash
+    kubectl create namespace prometheus-node-exporter
+    ```
+
+3. Install the Node Exporter using Helm:
+
+    ```bash
+    helm install prometheus-node-exporter prometheus-community/prometheus-node-exporter --namespace prometheus-node-exporter
+    ```
+
+Add a Job to Scrape Metrics on nodeip:9001/metrics in prometheus.yml:
+
+Update your Prometheus configuration (prometheus.yml) to add a new job for scraping metrics from nodeip:9001/metrics. You can do this by adding the following configuration to your prometheus.yml file:
+
+
+```
+  - job_name: 'k8s'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['node1Ip:9100']
+```
+
+Replace 'your-job-name' with a descriptive name for your job. The static_configs section specifies the targets to scrape metrics from, and in this case, it's set to nodeip:9001.
+
+Don't forget to reload or restart Prometheus to apply these changes to your configuration.
